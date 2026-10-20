@@ -1,0 +1,136 @@
+{
+  "file": "index.html",
+  "outputDir": "/Users/gabbyong/projects/demos14Oct2026/screenshots/pass1",
+  "deterministicTime": 12,
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  },
+  "consoleErrors": [],
+  "consoleWarnings": [],
+  "pageErrors": [],
+  "failedRequests": [],
+  "webglDiagnostics": {
+    "hasCanvas": true,
+    "width": 1440,
+    "height": 900,
+    "contextLost": false,
+    "vendor": "Google Inc. (Apple)",
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M5 Pro, Unspecified Version)",
+    "compileErrors": [],
+    "linkErrors": [],
+    "shadersCompiled": 24,
+    "programsLinked": 12,
+    "rendererInfo": null
+  },
+  "fpsMetrics": {
+    "framesSampled": 60,
+    "avgFrameMs": 16.67,
+    "avgFps": 60,
+    "maxFrameMs": 16.8
+  },
+  "navigationChecks": {
+    "wasdMovedDistance": 2.382,
+    "wasdPassed": true,
+    "orbitMovedDistance": 9.491,
+    "orbitPassed": true
+  },
+  "screenshots": [
+    {
+      "preset": "overview",
+      "path": "/Users/gabbyong/projects/demos14Oct2026/screenshots/pass1/overview.png",
+      "bytes": 362381,
+      "camera": {
+        "preset": "overview",
+        "position": [
+          0,
+          7.5,
+          24
+        ],
+        "target": [
+          0,
+          2.2,
+          -2
+        ],
+        "fov": 45
+      }
+    },
+    {
+      "preset": "bridge",
+      "path": "/Users/gabbyong/projects/demos14Oct2026/screenshots/pass1/bridge.png",
+      "bytes": 358821,
+      "camera": {
+        "preset": "bridge",
+        "position": [
+          -5.5,
+          3.4,
+          11.5
+        ],
+        "target": [
+          1.5,
+          2.4,
+          -3.5
+        ],
+        "fov": 42
+      }
+    },
+    {
+      "preset": "lantern_closeup",
+      "path": "/Users/gabbyong/projects/demos14Oct2026/screenshots/pass1/lantern_closeup.png",
+      "bytes": 399503,
+      "camera": {
+        "preset": "lantern_closeup",
+        "position": [
+          3.2,
+          1.85,
+          5.8
+        ],
+        "target": [
+          1.8,
+          1.4,
+          2.2
+        ],
+        "fov": 38
+      }
+    },
+    {
+      "preset": "water_grazing",
+      "path": "/Users/gabbyong/projects/demos14Oct2026/screenshots/pass1/water_grazing.png",
+      "bytes": 356369,
+      "camera": {
+        "preset": "water_grazing",
+        "position": [
+          -2.8,
+          0.55,
+          8.5
+        ],
+        "target": [
+          0.5,
+          1.6,
+          -6
+        ],
+        "fov": 40
+      }
+    },
+    {
+      "preset": "sanctuary_interior",
+      "path": "/Users/gabbyong/projects/demos14Oct2026/screenshots/pass1/sanctuary_interior.png",
+      "bytes": 338988,
+      "camera": {
+        "preset": "sanctuary_interior",
+        "position": [
+          0,
+          2.8,
+          -5.5
+        ],
+        "target": [
+          0,
+          2.5,
+          -16.5
+        ],
+        "fov": 46
+      }
+    }
+  ],
+  "passed": true
+}

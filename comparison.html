@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Floating Japanese Lantern Sanctuary at Dusk — Baseline vs. Final Comparison</title>
+  <link rel="icon" href="data:," />
+  <style>
+    :root {
+      --bg: #0f131c;
+      --ink: #f2eee4;
+      --ink-secondary: rgba(242, 238, 228, 0.74);
+      --ink-muted: rgba(242, 238, 228, 0.48);
+      --rule: rgba(242, 238, 228, 0.18);
+      --rule-strong: rgba(242, 238, 228, 0.42);
+      --split: 50%;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      line-height: 1.55;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Editorial layout */
+    .page-header {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 48px 40px 28px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: end;
+      gap: 32px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .page-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(32px, 4vw, 52px);
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+      color: var(--ink);
+      margin-bottom: 14px;
+    }
+
+    .page-lead {
+      max-width: 68ch;
+      font-size: clamp(17px, 1.5vw, 20px);
+      line-height: 1.5;
+      color: var(--ink-secondary);
+    }
+
+    .scene-links {
+      display: flex;
+      gap: 28px;
+      padding-bottom: 4px;
+    }
+
+    .scene-link {
+      font-size: 15px;
+      color: var(--ink-secondary);
+      text-decoration: underline;
+      text-underline-offset: 5px;
+      text-decoration-color: var(--rule-strong);
+      transition: color 0.15s ease, text-decoration-color 0.15s ease;
+    }
+
+    .scene-link:hover {
+      color: var(--ink);
+      text-decoration-color: var(--ink);
+    }
+
+    /* Controls bar above breakout stage */
+    .toolbar {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 22px 40px;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .preset-group {
+      display: flex;
+      align-items: baseline;
+      gap: 28px;
+      flex-wrap: wrap;
+    }
+
+    .preset-group-label {
+      font-size: 14px;
+      color: var(--ink-muted);
+    }
+
+    .preset-list {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+    }
+
+    .preset-btn {
+      appearance: none;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      padding: 4px 0;
+      font: inherit;
+      font-size: 16px;
+      color: var(--ink-secondary);
+      cursor: pointer;
+      transition: color 0.15s ease, border-color 0.15s ease;
+    }
+
+    .preset-btn:hover {
+      color: var(--ink);
+      border-bottom-color: var(--rule-strong);
+    }
+
+    .preset-btn.active {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+      font-weight: 600;
+    }
+
+    .mode-group {
+      display: flex;
+      align-items: baseline;
+      gap: 20px;
+    }
+
+    .mode-btn {
+      appearance: none;
+      background: none;
+      border: none;
+      border-bottom: 1px solid transparent;
+      padding: 2px 0;
+      font: inherit;
+      font-size: 14px;
+      color: var(--ink-muted);
+      cursor: pointer;
+    }
+
+    .mode-btn:hover {
+      color: var(--ink-secondary);
+    }
+
+    .mode-btn.active {
+      color: var(--ink);
+      border-bottom-color: var(--ink);
+    }
+
+    /* Wide breakout comparison stage */
+    .stage-breakout {
+      width: min(1600px, calc(100vw - 48px));
+      margin: 0 auto;
+    }
+
+    .comparison-stage {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      max-height: 82vh;
+      background: #0b0e17;
+      overflow: hidden;
+      user-select: none;
+    }
+
+    .viewport-layer {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .viewport-layer.baseline-layer {
+      clip-path: inset(0 calc(100% - var(--split)) 0 0);
+      z-index: 2;
+    }
+
+    .viewport-layer.final-layer {
+      z-index: 1;
+    }
+
+    .viewport-layer iframe,
+    .viewport-layer img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      display: block;
+      object-fit: cover;
+    }
+
+    .viewport-layer img.fallback-still {
+      z-index: 1;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .viewport-layer iframe {
+      z-index: 2;
+    }
+
+    .comparison-stage.stills-only .viewport-layer iframe {
+      display: none;
+    }
+
+    .comparison-stage.live-ready .viewport-layer img.fallback-still {
+      opacity: 0;
+    }
+
+    .comparison-stage.stills-only .viewport-layer img.fallback-still {
+      opacity: 1 !important;
+    }
+
+    /* Corner captions inside the viewport */
+    .stage-caption {
+      position: absolute;
+      top: 24px;
+      z-index: 5;
+      pointer-events: none;
+      text-shadow: 0 1px 12px rgba(4, 6, 12, 0.92);
+    }
+
+    .stage-caption.left {
+      left: 28px;
+    }
+
+    .stage-caption.right {
+      right: 28px;
+      text-align: right;
+    }
+
+    .stage-caption-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 20px;
+      color: var(--ink);
+      display: block;
+    }
+
+    .stage-caption-score {
+      font-size: 13px;
+      color: var(--ink-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Draggable vertical split-curtain handle */
+    .curtain-divider {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: var(--split);
+      width: 2px;
+      background: rgba(242, 238, 228, 0.88);
+      transform: translateX(-50%);
+      z-index: 10;
+      cursor: ew-resize;
+      touch-action: none;
+    }
+
+    .curtain-divider::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: -22px;
+      right: -22px;
+    }
+
+    .curtain-handle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #0f131c;
+      border: 1.5px solid var(--ink);
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      letter-spacing: 2px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.65);
+      transition: transform 0.12s ease;
+    }
+
+    .curtain-divider:hover .curtain-handle,
+    .curtain-divider:focus-visible .curtain-handle {
+      transform: translate(-50%, -50%) scale(1.08);
+    }
+
+    .curtain-divider:focus-visible {
+      outline: none;
+    }
+
+    /* Stage caption bar below the viewport */
+    .stage-meta {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 20px 40px 56px;
+      display: grid;
+      grid-template-columns: 1.3fr 1fr;
+      gap: 48px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .viewpoint-heading {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 24px;
+      font-weight: 400;
+      margin-bottom: 6px;
+      color: var(--ink);
+    }
+
+    .viewpoint-description {
+      font-size: 16px;
+      color: var(--ink-secondary);
+      max-width: 62ch;
+    }
+
+    .stage-instructions {
+      font-size: 14px;
+      color: var(--ink-muted);
+      align-self: end;
+      justify-self: end;
+      text-align: right;
+    }
+
+    /* Editorial findings & score table */
+    .editorial-section {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 64px 40px 96px;
+    }
+
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.35fr;
+      gap: 64px;
+      align-items: start;
+      margin-bottom: 72px;
+    }
+
+    .section-title {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(26px, 2.8vw, 36px);
+      font-weight: 400;
+      line-height: 1.18;
+      letter-spacing: -0.015em;
+      margin-bottom: 16px;
+    }
+
+    .section-copy {
+      font-size: 16px;
+      color: var(--ink-secondary);
+      margin-bottom: 16px;
+    }
+
+    /* Gov.uk style clean tabular data */
+    .score-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-variant-numeric: tabular-nums;
+      font-size: 15px;
+    }
+
+    .score-table th,
+    .score-table td {
+      padding: 12px 12px 12px 0;
+      border-bottom: 1px solid var(--rule);
+      text-align: left;
+    }
+
+    .score-table th {
+      font-weight: 600;
+      color: var(--ink);
+      border-bottom: 1px solid var(--rule-strong);
+    }
+
+    .score-table td {
+      color: var(--ink-secondary);
+    }
+
+    .score-table th.num,
+    .score-table td.num {
+      text-align: right;
+      padding-right: 0;
+      padding-left: 16px;
+    }
+
+    .score-table tr.total-row td {
+      color: var(--ink);
+      font-weight: 600;
+      border-top: 1px solid var(--rule-strong);
+      border-bottom: 2px solid var(--ink);
+      font-size: 16px;
+    }
+
+    /* Pass-by-pass visual progression strip */
+    .passes-header {
+      margin-bottom: 24px;
+      max-width: 68ch;
+    }
+
+    .passes-strip {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 20px;
+    }
+
+    .pass-item {
+      cursor: pointer;
+    }
+
+    .pass-item img {
+      width: 100%;
+      aspect-ratio: 16 / 10;
+      object-fit: cover;
+      display: block;
+      margin-bottom: 10px;
+      opacity: 0.85;
+      transition: opacity 0.15s ease;
+    }
+
+    .pass-item:hover img {
+      opacity: 1;
+    }
+
+    .pass-item-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .pass-item-desc {
+      font-size: 13.5px;
+      color: var(--ink-secondary);
+      line-height: 1.45;
+    }
+
+    @media (max-width: 960px) {
+      .page-header,
+      .stage-meta,
+      .editorial-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+      }
+      .stage-instructions {
+        justify-self: start;
+        text-align: left;
+      }
+      .passes-strip {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="page-header">
+    <div>
+      <h1 class="page-title">Floating Japanese Lantern Sanctuary at Dusk</h1>
+      <p class="page-lead">
+        Side-by-side comparison of Round 0 (Baseline) and Pass 4 (Final AAA). Drag the vertical divider across the scene or switch between the five diagnostic camera viewpoints.
+      </p>
+    </div>
+    <nav class="scene-links" aria-label="Full screen scenes">
+      <a class="scene-link" href="index.html">Open final scene</a>
+      <a class="scene-link" href="baseline.html">Open baseline scene</a>
+    </nav>
+  </header>
+
+  <div class="toolbar" role="region" aria-label="Comparison controls">
+    <div class="preset-group">
+      <span class="preset-group-label">Camera preset</span>
+      <div class="preset-list" id="preset-buttons">
+        <button type="button" class="preset-btn active" data-preset="overview">Overview</button>
+        <button type="button" class="preset-btn" data-preset="bridge">Arched bridge</button>
+        <button type="button" class="preset-btn" data-preset="lantern_closeup">Lantern close-up</button>
+        <button type="button" class="preset-btn" data-preset="water_grazing">Water grazing</button>
+        <button type="button" class="preset-btn" data-preset="sanctuary_interior">Sanctuary interior</button>
+      </div>
+    </div>
+
+    <div class="mode-group">
+      <button type="button" class="mode-btn active" id="mode-live-btn">Live 3D scenes</button>
+      <button type="button" class="mode-btn" id="mode-stills-btn">Captured 1440×900 stills</button>
+    </div>
+  </div>
+
+  <main>
+    <div class="stage-breakout">
+      <div class="comparison-stage" id="comparison-stage">
+        <!-- Left side: Round 0 Baseline -->
+        <div class="viewport-layer baseline-layer" id="baseline-layer">
+          <img class="fallback-still" id="baseline-still" src="screenshots/pass0/overview.png" alt="Round 0 baseline overview" />
+          <iframe id="baseline-iframe" src="baseline.html?chromeless=1&preset=overview&t=12" title="Round 0 Baseline 3D Scene"></iframe>
+        </div>
+
+        <!-- Right side: Pass 4 Final AAA -->
+        <div class="viewport-layer final-layer" id="final-layer">
+          <img class="fallback-still" id="final-still" src="screenshots/pass4/overview.png" alt="Pass 4 final AAA overview" />
+          <iframe id="final-iframe" src="index.html?chromeless=1&preset=overview&t=12" title="Pass 4 Final AAA 3D Scene"></iframe>
+        </div>
+
+        <div class="stage-caption left">
+          <span class="stage-caption-title">Round 0: Baseline</span>
+          <span class="stage-caption-score" id="caption-baseline-score">Critic score: 21 / 100</span>
+        </div>
+
+        <div class="stage-caption right">
+          <span class="stage-caption-title">Pass 4: Final AAA</span>
+          <span class="stage-caption-score" id="caption-final-score">Critic score: 87 / 100</span>
+        </div>
+
+        <!-- Draggable Curtain Divider -->
+        <div
+          class="curtain-divider"
+          id="curtain-divider"
+          role="slider"
+          tabindex="0"
+          aria-label="Comparison split curtain"
+          aria-valuemin="0"
+          aria-valuemax="100"
+          aria-valuenow="50"
+        >
+          <div class="curtain-handle" aria-hidden="true">↔</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage-meta">
+      <div>
+        <h2 class="viewpoint-heading" id="viewpoint-heading">Overview (0, 7.5, 24)</h2>
+        <p class="viewpoint-description" id="viewpoint-description">
+          Wide establishing frame across the cove. The final pass replaces flat triangle mountains, faceted tree spheres, and unreflective water with multi-ridge horizon mist, planar water reflections, and 7-lobed Japanese maple canopies.
+        </p>
+      </div>
+      <p class="stage-instructions">
+        Drag the vertical divider left or right. In live 3D mode, drag inside either half to orbit both cameras together, or use W, A, S, D, E and Q to fly.
+      </p>
+    </div>
+
+    <section class="editorial-section">
+      <div class="editorial-grid">
+        <div>
+          <h2 class="section-title">How the scene was graded and upgraded</h2>
+          <p class="section-copy">
+            An independent critic agent inspected chromeless 1440×900 screenshots across five viewpoints without reading the source code. It scored each pass out of 100 across five visual categories: tone mapping, lighting and contact shadows, surface relief, water and foliage, and atmospheric depth.
+          </p>
+          <p class="section-copy">
+            Each upgrade pass was only accepted after automated verification confirmed zero console or shader errors, 60 frames per second pacing, working keyboard and mouse navigation, and higher realism scores on every viewpoint.
+          </p>
+        </div>
+
+        <div>
+          <table class="score-table" aria-label="Realism scores across passes">
+            <thead>
+              <tr>
+                <th scope="col">Evaluation axis or viewpoint</th>
+                <th scope="col" class="num">Pass 0</th>
+                <th scope="col" class="num">Pass 1</th>
+                <th scope="col" class="num">Pass 2</th>
+                <th scope="col" class="num">Pass 3</th>
+                <th scope="col" class="num">Pass 4</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1. Tone mapping and exposure (out of 20)</td>
+                <td class="num">6</td>
+                <td class="num">13</td>
+                <td class="num">14</td>
+                <td class="num">15</td>
+                <td class="num">18</td>
+              </tr>
+              <tr>
+                <td>2. Lighting and contact shadows (out of 20)</td>
+                <td class="num">5</td>
+                <td class="num">11</td>
+                <td class="num">14</td>
+                <td class="num">15</td>
+                <td class="num">17</td>
+              </tr>
+              <tr>
+                <td>3. Surface relief and roughness (out of 20)</td>
+                <td class="num">3</td>
+                <td class="num">4</td>
+                <td class="num">15</td>
+                <td class="num">16</td>
+                <td class="num">17</td>
+              </tr>
+              <tr>
+                <td>4. Water and foliage (out of 20)</td>
+                <td class="num">3</td>
+                <td class="num">4</td>
+                <td class="num">5</td>
+                <td class="num">16</td>
+                <td class="num">18</td>
+              </tr>
+              <tr>
+                <td>5. Atmospheric depth (out of 20)</td>
+                <td class="num">4</td>
+                <td class="num">11</td>
+                <td class="num">12</td>
+                <td class="num">13</td>
+                <td class="num">18</td>
+              </tr>
+              <tr class="total-row">
+                <td>Overall realism score (out of 100)</td>
+                <td class="num">21</td>
+                <td class="num">43</td>
+                <td class="num">60</td>
+                <td class="num">75</td>
+                <td class="num">88</td>
+              </tr>
+              <tr>
+                <td>Overview viewpoint</td>
+                <td class="num">21</td>
+                <td class="num">44</td>
+                <td class="num">58</td>
+                <td class="num">74</td>
+                <td class="num">87</td>
+              </tr>
+              <tr>
+                <td>Arched bridge viewpoint</td>
+                <td class="num">22</td>
+                <td class="num">43</td>
+                <td class="num">61</td>
+                <td class="num">76</td>
+                <td class="num">88</td>
+              </tr>
+              <tr>
+                <td>Lantern close-up viewpoint</td>
+                <td class="num">20</td>
+                <td class="num">41</td>
+                <td class="num">60</td>
+                <td class="num">75</td>
+                <td class="num">88</td>
+              </tr>
+              <tr>
+                <td>Water grazing viewpoint</td>
+                <td class="num">21</td>
+                <td class="num">42</td>
+                <td class="num">58</td>
+                <td class="num">76</td>
+                <td class="num">88</td>
+              </tr>
+              <tr>
+                <td>Sanctuary interior viewpoint</td>
+                <td class="num">21</td>
+                <td class="num">45</td>
+                <td class="num">63</td>
+                <td class="num">75</td>
+                <td class="num">89</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="passes-header">
+        <h2 class="section-title">Progression from Pass 0 to Pass 4</h2>
+        <p class="section-copy">
+          Captured 1440×900 diagnostic frames for the currently selected camera preset across all five stages.
+        </p>
+      </div>
+
+      <div class="passes-strip" id="passes-strip">
+        <div class="pass-item">
+          <img id="strip-pass0" src="screenshots/pass0/overview.png" alt="Pass 0 frame" />
+          <div class="pass-item-title"><span>Pass 0: Baseline</span><span>21 / 100</span></div>
+          <p class="pass-item-desc">Standard materials, linear tone mapping, geometric foliage, and basic lighting.</p>
+        </div>
+        <div class="pass-item">
+          <img id="strip-pass1" src="screenshots/pass1/overview.png" alt="Pass 1 frame" />
+          <div class="pass-item-title"><span>Pass 1: Tone &amp; Sky</span><span>43 / 100</span></div>
+          <p class="pass-item-desc">AgX tone mapping, washi paper candle gradients, kumiko shoji grids, and multi-ridge mountains.</p>
+        </div>
+        <div class="pass-item">
+          <img id="strip-pass2" src="screenshots/pass2/overview.png" alt="Pass 2 frame" />
+          <div class="pass-item-title"><span>Pass 2: Surfaces</span><span>60 / 100</span></div>
+          <p class="pass-item-desc">Carved granite lanterns, wet shoreline stones, moss relief, timber grain, and kawara roof tiles.</p>
+        </div>
+        <div class="pass-item">
+          <img id="strip-pass3" src="screenshots/pass3/overview.png" alt="Pass 3 frame" />
+          <div class="pass-item-title"><span>Pass 3: Water &amp; Foliage</span><span>75 / 100</span></div>
+          <p class="pass-item-desc">Planar mirror water reflections with 5-octave ripples and 7-lobed Japanese maple boughs.</p>
+        </div>
+        <div class="pass-item">
+          <img id="strip-pass4" src="screenshots/pass4/overview.png" alt="Pass 4 frame" />
+          <div class="pass-item-title"><span>Pass 4: Final AAA</span><span>88 / 100</span></div>
+          <p class="pass-item-desc">Selective optical bloom, pooled exponential water mist, backlit leaf translucency, and rising embers.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const PRESET_METADATA = {
+      overview: {
+        heading: 'Overview (0, 7.5, 24)',
+        description: 'Wide establishing frame across the cove. The final pass replaces flat triangle mountains, faceted tree spheres, and unreflective water with multi-ridge horizon mist, planar water reflections, and 7-lobed Japanese maple canopies.',
+        baselineScore: 21,
+        finalScore: 87
+      },
+      bridge: {
+        heading: 'Arched bridge (-5.5, 3.4, 11.5)',
+        description: 'Looking across the arched timber bridge toward the torii gate. Individual beveled cedar planks, brass giboshi post caps, wet shoreline boulders, and pooled water mist ground the crossing.',
+        baselineScore: 22,
+        finalScore: 88
+      },
+      lantern_closeup: {
+        heading: 'Lantern close-up (3.2, 1.85, 5.8)',
+        description: 'Close inspection of the shoreline stone lantern and drifting paper lanterns. Carved granite normal pitting, velvet moss patches, wet-stone shoreline darkening, and warm optical bloom replace smooth grey cylinders.',
+        baselineScore: 20,
+        finalScore: 88
+      },
+      water_grazing: {
+        heading: 'Water grazing (-2.8, 0.55, 8.5)',
+        description: 'Low angle skimming 55 cm above the water surface. Physical Schlick Fresnel reflectivity and 5-octave capillary ripples break the reflections of the shoji screens, torii pillars, and floating lanterns.',
+        baselineScore: 21,
+        finalScore: 88
+      },
+      sanctuary_interior: {
+        heading: 'Sanctuary interior (0.0, 2.8, -5.5)',
+        description: 'Looking past the torii gate into the island pavilion. Ribbed kawara roof tiles, projecting eaves rafters, kumimono bracket joinery, and halated kumiko shoji screens frame the inner altar.',
+        baselineScore: 21,
+        finalScore: 89
+      }
+    };
+
+    const stage = document.getElementById('comparison-stage');
+    const divider = document.getElementById('curtain-divider');
+    const baselineIframe = document.getElementById('baseline-iframe');
+    const finalIframe = document.getElementById('final-iframe');
+    const baselineStill = document.getElementById('baseline-still');
+    const finalStill = document.getElementById('final-still');
+    const captionBaselineScore = document.getElementById('caption-baseline-score');
+    const captionFinalScore = document.getElementById('caption-final-score');
+    const viewpointHeading = document.getElementById('viewpoint-heading');
+    const viewpointDescription = document.getElementById('viewpoint-description');
+    const presetButtons = Array.from(document.querySelectorAll('.preset-btn'));
+    const modeLiveBtn = document.getElementById('mode-live-btn');
+    const modeStillsBtn = document.getElementById('mode-stills-btn');
+
+    let currentPreset = 'overview';
+    let splitPercent = 50;
+    let isDraggingCurtain = false;
+    let baselineReady = false;
+    let finalReady = false;
+
+    function setSplitPercent(pct) {
+      splitPercent = Math.max(2, Math.min(98, pct));
+      document.documentElement.style.setProperty('--split', splitPercent.toFixed(2) + '%');
+      divider.setAttribute('aria-valuenow', Math.round(splitPercent));
+    }
+
+    window.__SET_CURTAIN_SPLIT__ = setSplitPercent;
+
+    function updateSplitFromPointer(clientX) {
+      const rect = stage.getBoundingClientRect();
+      if (rect.width <= 0) return;
+      const pct = ((clientX - rect.left) / rect.width) * 100;
+      setSplitPercent(pct);
+    }
+
+    divider.addEventListener('pointerdown', (e) => {
+      isDraggingCurtain = true;
+      divider.setPointerCapture(e.pointerId);
+      updateSplitFromPointer(e.clientX);
+      e.preventDefault();
+    });
+
+    divider.addEventListener('pointermove', (e) => {
+      if (!isDraggingCurtain) return;
+      updateSplitFromPointer(e.clientX);
+    });
+
+    divider.addEventListener('pointerup', () => {
+      isDraggingCurtain = false;
+    });
+
+    divider.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') {
+        setSplitPercent(splitPercent - 4);
+        e.preventDefault();
+      } else if (e.key === 'ArrowRight') {
+        setSplitPercent(splitPercent + 4);
+        e.preventDefault();
+      }
+    });
+
+    function selectCameraPreset(name) {
+      if (!PRESET_METADATA[name]) return null;
+      currentPreset = name;
+      const meta = PRESET_METADATA[name];
+
+      presetButtons.forEach((btn) => {
+        btn.classList.toggle('active', btn.dataset.preset === name);
+      });
+
+      viewpointHeading.textContent = meta.heading;
+      viewpointDescription.textContent = meta.description;
+      captionBaselineScore.textContent = `Critic score: ${meta.baselineScore} / 100`;
+      captionFinalScore.textContent = `Critic score: ${meta.finalScore} / 100`;
+
+      baselineStill.src = `screenshots/pass0/${name}.png`;
+      finalStill.src = `screenshots/pass4/${name}.png`;
+
+      for (let p = 0; p <= 4; p++) {
+        const img = document.getElementById(`strip-pass${p}`);
+        if (img) img.src = `screenshots/pass${p}/${name}.png`;
+      }
+
+      try {
+        if (baselineIframe.contentWindow && baselineIframe.contentWindow.__SET_CAMERA_PRESET__) {
+          baselineIframe.contentWindow.__SET_CAMERA_PRESET__(name);
+        }
+      } catch (_) {}
+
+      try {
+        if (finalIframe.contentWindow && finalIframe.contentWindow.__SET_CAMERA_PRESET__) {
+          finalIframe.contentWindow.__SET_CAMERA_PRESET__(name);
+        }
+      } catch (_) {}
+
+      return { preset: name, baselineScore: meta.baselineScore, finalScore: meta.finalScore };
+    }
+
+    window.__SET_CAMERA_PRESET__ = selectCameraPreset;
+
+    presetButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectCameraPreset(btn.dataset.preset);
+      });
+    });
+
+    modeLiveBtn.addEventListener('click', () => {
+      stage.classList.remove('stills-only');
+      modeLiveBtn.classList.add('active');
+      modeStillsBtn.classList.remove('active');
+    });
+
+    modeStillsBtn.addEventListener('click', () => {
+      stage.classList.add('stills-only');
+      modeStillsBtn.classList.add('active');
+      modeLiveBtn.classList.remove('active');
+    });
+
+    // Synchronize camera between live Baseline and Final iframes when user orbits or flies in either one
+    let lastActiveSource = 'final';
+
+    function checkIframesReady() {
+      if (baselineReady && finalReady) {
+        stage.classList.add('live-ready');
+      }
+    }
+
+    baselineIframe.addEventListener('load', () => {
+      baselineReady = true;
+      try {
+        const win = baselineIframe.contentWindow;
+        win.addEventListener('pointerdown', () => { lastActiveSource = 'baseline'; });
+        win.addEventListener('wheel', () => { lastActiveSource = 'baseline'; }, { passive: true });
+        win.addEventListener('keydown', () => { lastActiveSource = 'baseline'; });
+      } catch (_) {}
+      checkIframesReady();
+    });
+
+    finalIframe.addEventListener('load', () => {
+      finalReady = true;
+      try {
+        const win = finalIframe.contentWindow;
+        win.addEventListener('pointerdown', () => { lastActiveSource = 'final'; });
+        win.addEventListener('wheel', () => { lastActiveSource = 'final'; }, { passive: true });
+        win.addEventListener('keydown', () => { lastActiveSource = 'final'; });
+      } catch (_) {}
+      checkIframesReady();
+    });
+
+    function syncCamerasLoop() {
+      try {
+        const bWin = baselineIframe.contentWindow;
+        const fWin = finalIframe.contentWindow;
+        if (bWin && fWin && bWin.__GET_CAMERA_STATE__ && fWin.__GET_CAMERA_STATE__) {
+          const sourceWin = lastActiveSource === 'baseline' ? bWin : fWin;
+          const targetWin = lastActiveSource === 'baseline' ? fWin : bWin;
+          const s = sourceWin.__GET_CAMERA_STATE__();
+          const t = targetWin.__GET_CAMERA_STATE__();
+          if (s && t) {
+            const diff =
+              Math.abs(s.position[0] - t.position[0]) +
+              Math.abs(s.position[1] - t.position[1]) +
+              Math.abs(s.position[2] - t.position[2]) +
+              Math.abs(s.target[0] - t.target[0]) +
+              Math.abs(s.target[1] - t.target[1]) +
+              Math.abs(s.target[2] - t.target[2]);
+            if (diff > 1e-4) {
+              targetWin.__SET_CAMERA_STATE__(s);
+            }
+          }
+        }
+      } catch (_) {}
+      requestAnimationFrame(syncCamerasLoop);
+    }
+
+    requestAnimationFrame(syncCamerasLoop);
+  </script>
+</body>
+</html>

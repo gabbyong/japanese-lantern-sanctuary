@@ -1,0 +1,13 @@
+{
+  "name": "japanese-lantern-sanctuary",
+  "version": "1.0.0",
+  "description": "Interactive 3D Floating Japanese Lantern Sanctuary at Dusk in Three.js with Gemini Lyria RealTime Lo-Fi soundtrack and multi-agent visual hill-climbing comparison.",
+  "type": "module",
+  "main": "server.mjs",
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
